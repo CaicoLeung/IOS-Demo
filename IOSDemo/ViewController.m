@@ -62,7 +62,7 @@
     textView.layer.borderWidth = 1.0;
     textView.layer.borderColor = [UIColor colorWithRed:220/255.0 green:220/255.0 blue:220/255.0 alpha:1].CGColor;
     textView.layer.cornerRadius = 5.0;
-    textView.text = @"区块链技术自 2017年以来备受关注。目前区块链技术的应用已经从单一的数字货币应用延伸到经济社会的各个领域。面对区块链这场“技术革命”，SegmentFault将以黑客马拉松的方式，和开发者们共同探索区块链，见证这场 Geek 盛会。";
+    textView.text = @"按Tab键收起键盘";
     textView.delegate = self;
     [self.view addSubview:textView];
 //    labelAbstract标签与textView之间的距离
@@ -76,6 +76,18 @@
     NSLog(@"\"点我啊\"被点击了!");
     self.label.text = self.flag ? @"我脏了" : @"Caico Leung";
     self.flag = !self.flag;
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [textField resignFirstResponder];
+    return YES;
+}
+
+-(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text{
+    if ([text isEqualToString:@"\t"]) {
+        [textView resignFirstResponder];
+    }
+    return YES;
 }
 
 @end
