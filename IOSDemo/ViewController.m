@@ -12,9 +12,50 @@
 @interface ViewController ()<UITextFieldDelegate, UITextViewDelegate>
 @property Boolean flag;
 @property (strong, nonatomic)UILabel *label;
+@property (strong, nonatomic)UITextView *textView;
 @end
 
 @implementation ViewController
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear: animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear: animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name: UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name: UIKeyboardDidHideNotification object:nil];
+}
+
+-(void)keyboardDidShow: (NSNotification *)notification {
+    NSLog(@"键盘打开");
+}
+
+-(void)keyboardDidHide: (NSNotification *)notification {
+    NSLog(@"键盘关闭");
+}
+
+-(void)textViewDidBeginEditing:(UITextView *)textView {
+    if ([textView.text isEqualToString:@"placeholder text here..."]) {
+        textView.text = @"";
+        textView.textColor = [UIColor grayColor];
+    }
+    [textView becomeFirstResponder];
+}
+
+-(void)textViewDidChange:(UITextView *)textView {
+    textView.textColor = [UIColor blackColor ];
+}
+
+-(void)textViewDidEndEditing:(UITextView *)textView {
+    if ([textView.text isEqualToString:@""]) {
+        textView.text = @"placeholder text here...";
+        textView.textColor = [UIColor grayColor];
+    }
+    [textView resignFirstResponder];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -47,6 +88,8 @@
     CGRect textFieldFrame = CGRectMake((screen.size.width - textFieldWidth) / 2, textTopView, textFieldWidth, textFieldheight);
     UITextField *textField = [[UITextField alloc] initWithFrame:textFieldFrame];
     textField.borderStyle = UITextBorderStyleRoundedRect;
+    textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    textField.returnKeyType = UIReturnKeyNext;
     textField.delegate = self;
     [self.view addSubview:textField];
 //    labelName标签与textField之间的距离
@@ -58,16 +101,18 @@
     CGFloat textViewWidth = 236;
     CGFloat textViewHeight = 198;
     CGFloat textViewTopView = 360;
-    UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake((screen.size.width - textViewWidth) / 2, textViewTopView, textViewWidth, textViewHeight)];
-    textView.layer.borderWidth = 1.0;
-    textView.layer.borderColor = [UIColor colorWithRed:220/255.0 green:220/255.0 blue:220/255.0 alpha:1].CGColor;
-    textView.layer.cornerRadius = 5.0;
-    textView.text = @"按Tab键收起键盘";
-    textView.delegate = self;
-    [self.view addSubview:textView];
+    self.textView = [[UITextView alloc] initWithFrame:CGRectMake((screen.size.width - textViewWidth) / 2, textViewTopView, textViewWidth, textViewHeight)];
+    self.textView.layer.borderWidth = 1.0;
+    self.textView.layer.borderColor = [UIColor colorWithRed:220/255.0 green:220/255.0 blue:220/255.0 alpha:1].CGColor;
+    self.textView.layer.cornerRadius = 5.0;
+    self.textView.text = @"按回车键收起键盘";
+    self.textView.returnKeyType = UIReturnKeyDone;
+    self.textView.keyboardType = UIKeyboardTypeDefault;
+    self.textView.delegate = self;
+    [self.view addSubview:self.textView];
 //    labelAbstract标签与textView之间的距离
     CGFloat labelAbstractTextViewSpace = 30;
-    UILabel *labelAbstract = [[UILabel alloc] initWithFrame:CGRectMake(textView.frame.origin.x, textView.frame.origin.y - labelAbstractTextViewSpace, 103, 21)];
+    UILabel *labelAbstract = [[UILabel alloc] initWithFrame:CGRectMake(self.textView.frame.origin.x, self.textView.frame.origin.y - labelAbstractTextViewSpace, 103, 21)];
     labelAbstract.text = @"Abstract:";
     [self.view addSubview:labelAbstract];
 }
@@ -80,11 +125,12 @@
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
+    [self.textView becomeFirstResponder];
     return YES;
 }
 
 -(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text{
-    if ([text isEqualToString:@"\t"]) {
+    if ([text isEqualToString:@"\n"]) {
         [textView resignFirstResponder];
     }
     return YES;
