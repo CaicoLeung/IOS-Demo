@@ -10,9 +10,5 @@
 
 @interface ViewController : UIViewController
 
-@property (strong, nonatomic) UISwitch *rightSwitch;
-@property (strong, nonatomic) UISwitch *leftSwitch;
-@property (strong, nonatomic) UISwitch *sliderSwitch;
-
 @end
 

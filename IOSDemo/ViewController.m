@@ -10,9 +10,14 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface ViewController ()<UITextFieldDelegate, UITextViewDelegate>
+
 @property Boolean flag;
 @property (strong, nonatomic)UILabel *label;
 @property (strong, nonatomic)UITextView *textView;
+@property (strong, nonatomic)UISwitch *leftSwitch;
+@property (strong, nonatomic)UISwitch *rightSwitch;
+@property (strong, nonatomic)UILabel *switchStatusLabel;
+
 @end
 
 @implementation ViewController
@@ -115,6 +120,37 @@
     UILabel *labelAbstract = [[UILabel alloc] initWithFrame:CGRectMake(self.textView.frame.origin.x, self.textView.frame.origin.y - labelAbstractTextViewSpace, 103, 21)];
     labelAbstract.text = @"Abstract:";
     [self.view addSubview:labelAbstract];
+    
+    CGFloat switchScreenSpace = 35;
+    self.leftSwitch = [[UISwitch alloc] init];
+    self.rightSwitch = [[UISwitch alloc] init];
+    CGRect frame = self.leftSwitch.frame;
+    frame.origin = CGPointMake(switchScreenSpace, 50);
+    self.leftSwitch.frame = frame;
+    self.leftSwitch.on = TRUE;
+    [self.leftSwitch addTarget:self action:@selector(switchValueChange:) forControlEvents:UIControlEventValueChanged];
+    frame.origin = CGPointMake(screen.size.width - self.rightSwitch.frame.size.width - switchScreenSpace, 50);
+    self.rightSwitch.frame = frame;
+    self.rightSwitch.on = FALSE;
+    [self.rightSwitch addTarget:self action:@selector(switchValueChange:) forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:self.leftSwitch];
+    [self.view addSubview:self.rightSwitch];
+    
+    CGFloat switchStatusLabelSwitchSpace = 20;
+    self.switchStatusLabel = [[UILabel alloc] initWithFrame:CGRectMake(switchScreenSpace + self.leftSwitch.frame.size.width + switchStatusLabelSwitchSpace, 50, screen.size.width - (switchScreenSpace + self.leftSwitch.frame.size.width + switchStatusLabelSwitchSpace) * 2, 20)];
+    self.switchStatusLabel.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:self.switchStatusLabel];
+    
+    NSArray* segments = @[@"Left", @"Right"];
+    UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:segments];
+    CGFloat scWidth = 220;
+    CGFloat scHeight = 29;
+    CGFloat scTopView = 80;
+    CGRect scFrame = CGRectMake((screen.size.width - scWidth) / 2, scTopView, scWidth, scHeight);
+    segmentedControl.frame = scFrame;
+    segmentedControl.selectedSegmentIndex = 0;
+    [segmentedControl addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:segmentedControl];
 }
 
 -(void)onButtonOnclick:(id)sender {
@@ -124,6 +160,7 @@
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    NSLog(@"输入的文本为: %@", textField.text);
     [textField resignFirstResponder];
     [self.textView becomeFirstResponder];
     return YES;
@@ -134,6 +171,26 @@
         [textView resignFirstResponder];
     }
     return YES;
+}
+
+-(void)switchValueChange:(id)sender {
+    UISwitch *witchSwitch = (UISwitch *)sender;
+    BOOL setting = [witchSwitch isOn];
+    self.switchStatusLabel.text = [witchSwitch isOn] == TRUE ? @"开启" : @"关闭";
+    [self.leftSwitch setOn:setting animated:TRUE];
+    [self.rightSwitch setOn:setting animated:TRUE];
+}
+
+-(void)touchDown:(id)sender {
+    UISegmentedControl *segmentedControl = (UISegmentedControl *)sender;
+    NSLog(@"选择的段: %li", segmentedControl.selectedSegmentIndex);
+    if (segmentedControl.selectedSegmentIndex == 0) {
+        self.rightSwitch.hidden = TRUE;
+        self.leftSwitch.hidden = FALSE;
+    } else {
+        self.leftSwitch.hidden = TRUE;
+        self.rightSwitch.hidden = FALSE;
+    }
 }
 
 @end
