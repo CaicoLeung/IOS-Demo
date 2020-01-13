@@ -14,10 +14,8 @@
             filePath = "IOSDemo/ViewController.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "12"
-            endingLineNumber = "12"
-            landmarkName = "ViewController()"
-            landmarkType = "2">
+            startingLineNumber = "222"
+            endingLineNumber = "222">
             <Locations>
                <Location
                   uuid = "F0D6F93B-CEF8-4371-BB16-E361A0B4BEA3 - 11062d260dd1471"
